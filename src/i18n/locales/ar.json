@@ -1,0 +1,73 @@
+{
+  "common": {
+    "employeeCode": "رمز الموظف",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "date": "التاريخ",
+    "day": "اليوم",
+    "clockIn": "تسجيل الدخول",
+    "clockOut": "تسجيل الخروج",
+    "totalHours": "مجموع الساعات",
+    "actions": "إجراءات",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "completed": "مكتمل",
+    "active": "نشط",
+    "employeeInfo": "معلومات الموظف",
+    "joinedOn": "تاريخ الانضمام",
+    "duration": "الساعة"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "adminLogin": "دخول المشرف",
+    "employeeLogin": "دخول الموظف"
+  },
+  "dashboard": {
+    "title": "متتبع وقت الموظف",
+    "currentStatus": "الحالة الحالية",
+    "currentTime": "الوقت الحالي",
+    "timeElapsed": "الوقت المنقضي",
+    "clockedIn": "أنت مسجل الدخول حالياً",
+    "notClockedIn": "أنت غير مسجل الدخول",
+    "clockInButton": "تسجيل الدخول",
+    "clockOutButton": "تسجيل الخروج",
+    "timeRecords": "سجلات الوقت",
+    "recentActivity": "عرض أحدث نشاط تتبع الوقت",
+    "noTimeRecords": "لا توجد سجلات وقت"
+  },
+  "admin": {
+    "addEmployee": {
+      "title": "إضافة موظف جديد",
+      "subtitle": "إنشاء سجل موظف جديد في النظام",
+      "fullName": "الاسم الكامل",
+      "emailAddress": "البريد الإلكتروني",
+      "employeeCode": "رمز الموظف",
+      "codeHelp": "سيتم استخدام هذا الرمز من قبل الموظف لتسجيل الدخول والخروج",
+      "addButton": "إضافة موظف",
+      "addingButton": "جاري الإضافة..."
+    },
+    "reports": {
+      "title": "تقارير الوقت",
+      "subtitle": "إنشاء وتصدير تقارير متابعة الوقت",
+      "selectDate": "اختر التاريخ",
+      "generateReport": "إنشاء التقرير",
+      "sendEmail": "إرسال بالبريد الإلكتروني",
+      "emailSent": "تم الإرسال!",
+      "scheduledReports": "التقارير المجدولة",
+      "autoReportInfo": "يتم إنشاء التقارير اليومية تلقائياً في منتصف الليل (توقيت قطر، GMT+3) وإرسالها إلى seif8911.888@gmail.com"
+    }
+  },
+  "codeEntry": {
+    "title": "متتبع الوقت",
+    "subtitle": "نظام تسجيل دخول الموظف",
+    "enterCode": "أدخل رمز الموظف",
+    "verifying": "جاري التحقق...",
+    "proceed": "متابعة",
+    "adminLogin": "دخول المشرف"
+  }
+}

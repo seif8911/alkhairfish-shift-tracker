@@ -1,0 +1,82 @@
+{
+  "common": {
+    "employeeCode": "Employee Code",
+    "name": "Name",
+    "email": "Email",
+    "date": "Date",
+    "day": "Day",
+    "clockIn": "Clock In",
+    "clockOut": "Clock Out",
+    "totalHours": "Total Hours",
+    "actions": "Actions",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "completed": "Completed",
+    "active": "Active",
+    "duration": "Duration",
+    "employeeInfo": "Employee Information",
+    "joinedOn": "Joined On"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "adminLogin": "Admin Login",
+    "employeeLogin": "Employee Login"
+  },
+  "dashboard": {
+    "title": "Employee Time Tracker",
+    "currentStatus": "Current Status",
+    "currentTime": "Current Time",
+    "timeElapsed": "Time Elapsed",
+    "clockedIn": "You are currently clocked in",
+    "notClockedIn": "You are not clocked in",
+    "clockInButton": "Clock In",
+    "clockOutButton": "Clock Out",
+    "timeRecords": "Time Records",
+    "recentActivity": "View your recent time tracking activity",
+    "noTimeRecords": "No time records found"
+  },
+  "admin": {
+    "addEmployee": {
+      "title": "Add New Employee",
+      "subtitle": "Create a new employee record in the system",
+      "fullName": "Full Name",
+      "emailAddress": "Email Address",
+      "employeeCode": "Employee Code",
+      "codeHelp": "This code will be used by the employee to clock in and out",
+      "addButton": "Add Employee",
+      "addingButton": "Adding..."
+    },
+    "reports": {
+      "title": "Time Reports",
+      "subtitle": "Generate and export time tracking reports",
+      "selectDate": "Select Date",
+      "generateReport": "Generate Report",
+      "sendEmail": "Send by Email",
+      "emailSent": "Email Sent!",
+      "scheduledReports": "Scheduled Reports",
+      "autoReportInfo": "Daily reports are automatically generated at midnight (Qatar Time, GMT+3) and sent to seif8911.888@gmail.com"
+    }
+  },
+  "codeEntry": {
+    "title": "Time Tracker",
+    "subtitle": "Employee Check-In System",
+    "enterCode": "Enter Employee Code",
+    "verifying": "Verifying...",
+    "proceed": "Proceed",
+    "adminLogin": "Admin Login"
+  },
+  "languageSwitch": {
+    "switchToEnglish": "Switch to English",
+    "switchToArabic": "Switch to Arabic",
+    "english": "English",
+    "arabic": "Arabic"
+  },
+  "footer": {
+    "copy": " 2025 Alkhair Fish Restaurant. All rights reserved."
+  }
+}
