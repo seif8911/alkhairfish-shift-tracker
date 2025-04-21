@@ -11,15 +11,20 @@ interface TimeTrackingProps {
 const TimeTracking: React.FC<TimeTrackingProps> = ({ employee }) => {
   const { t, i18n } = useTranslation();
   const [timeRecords, setTimeRecords] = useState<TimeRecord[]>([]);
-  // Removed client-side date filtering; using all server records
-  // const [selectedDate, setSelectedDate] = useState<string>(/* not used */);
+  // Date navigation: show selected date (today or yesterday)
+  const formatISODate = (date: Date) => date.toISOString().split('T')[0];
+  const todayStr = formatISODate(new Date());
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = formatISODate(yesterdayDate);
+  const [selectedDate, setSelectedDate] = useState<string>(todayStr);
 
   // Fetch time records
   useEffect(() => {
-    fetchTimeRecordsApi(employee.id)
+    fetchTimeRecordsApi(employee.id, selectedDate)
       .then(setTimeRecords)
       .catch(console.error);
-  }, [employee.id]);
+  }, [employee.id, selectedDate]);
 
   // Format time for display (HH:MM)
   const formatTime = (dateString: string | null): string => {
@@ -47,7 +52,6 @@ const TimeTracking: React.FC<TimeTrackingProps> = ({ employee }) => {
     });
   };
 
-  // Removed client-side date filtering; using all server records
   const filteredRecords = timeRecords;
 
   return (
@@ -63,6 +67,23 @@ const TimeTracking: React.FC<TimeTrackingProps> = ({ employee }) => {
       </div>
       
       <div className="px-6 py-6">
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={() => setSelectedDate(yesterdayStr)}
+            disabled={selectedDate === yesterdayStr}
+            className="text-sm text-blue-500 hover:underline disabled:text-gray-400"
+          >
+            {t('dashboard.yesterday', { defaultValue: 'Yesterday' })}
+          </button>
+          <span className="text-sm font-medium">{formatDate(selectedDate)}</span>
+          <button
+            onClick={() => setSelectedDate(todayStr)}
+            disabled={selectedDate === todayStr}
+            className="text-sm text-blue-500 hover:underline disabled:text-gray-400"
+          >
+            {t('dashboard.today', { defaultValue: 'Today' })}
+          </button>
+        </div>
         {filteredRecords.length > 0 ? (
           <div className="space-y-4">
             {filteredRecords.map((record) => (

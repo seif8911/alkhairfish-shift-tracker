@@ -46,8 +46,12 @@ export async function deleteEmployeeApi(id: number): Promise<void> {
 }
 
 // Time records
-export async function fetchTimeRecordsApi(employeeId: number): Promise<TimeRecord[]> {
-  const res = await fetch(`${API_BASE}/time/${employeeId}`);
+export async function fetchTimeRecordsApi(employeeId: number, date?: string): Promise<TimeRecord[]> {
+  let url = `${API_BASE}/time/${employeeId}`;
+  if (date) {
+    url += `?date=${date}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch time records');
   return res.json();
 }

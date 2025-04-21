@@ -162,7 +162,15 @@ app.post('/api/time/clock-out', async (req, res) => {
 });
 
 app.get('/api/time/:employeeId', async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM time_records WHERE employeeId = ?', [req.params.employeeId]);
+  const { employeeId } = req.params;
+  const { date } = req.query;
+  let query = 'SELECT * FROM time_records WHERE employeeId = ?';
+  const params = [employeeId];
+  if (date) {
+    query += ' AND DATE(`date`) = ?';
+    params.push(date);
+  }
+  const [rows] = await pool.query(query, params);
   res.json(rows);
 });
 
