@@ -6,6 +6,7 @@ export interface Employee {
   createdAt: string;
   // Whether the employee is currently clocked in
   active?: boolean;
+  photo?: string;
 }
 
 export interface TimeRecord {

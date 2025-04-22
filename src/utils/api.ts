@@ -40,6 +40,19 @@ export async function addEmployeeApi(employee: Omit<Employee, 'id' | 'createdAt'
   return res.json();
 }
 
+// Upload employee photo
+export async function uploadEmployeePhotoApi(photo: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('photo', photo);
+  const res = await fetch(`/api/employees/upload-photo`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Failed to upload photo');
+  const data = await res.json();
+  return data.filename;
+}
+
 export async function deleteEmployeeApi(id: number): Promise<void> {
   const res = await fetch(`${API_BASE}/employees/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete');
@@ -77,17 +90,25 @@ export async function clockOutApi(employeeId: number): Promise<TimeRecord | null
 }
 
 // Reports
-export async function generateReportDataApi(date: string): Promise<any[]> {
-  const res = await fetch(`${API_BASE}/time/report/${date}`);
+export async function generateReportDataApi(date: string, type: 'daily' | 'weekly' | 'monthly' | 'custom', endDate?: string): Promise<any[]> {
+  let url = `${API_BASE}/time/report/${date}?type=${type}`;
+  if (type === 'custom' && endDate) {
+    url += `&endDate=${endDate}`;
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error((await res.json()).error || 'Failed to fetch report');
   return res.json();
 }
 
-export async function sendReportEmailApi(date: string): Promise<void> {
+export async function sendReportEmailApi(date: string, type: 'daily' | 'weekly' | 'monthly' | 'custom', endDate?: string): Promise<void> {
+  const payload: any = { date, type };
+  if (type === 'custom' && endDate) {
+    payload.endDate = endDate;
+  }
   const res = await fetch(`${API_BASE}/email/send-report`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ date }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error((await res.json()).error || 'Failed to send report');
 }

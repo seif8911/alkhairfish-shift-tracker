@@ -68,7 +68,27 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onDeleteEmployee }) => {
               
               return (
                 <div key={employee.id} className="py-4">
-                  <div className="flex justify-between items-start">
+                  <div className={`flex justify-between items-start ${document?.dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                    {/* Photo display */}
+                    {employee.photo ? (
+                      <img
+                        src={`/api/employees_pictures/${employee.photo}`}
+                        alt={employee.name}
+                        className="h-20 w-20 object-contain border mr-4"
+                        style={document?.dir === 'rtl' ? { marginLeft: '1rem', marginRight: 0 } : { marginRight: '1rem', marginLeft: 0 }}
+                      />
+                    ) : (
+                      <div
+                        className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xl mr-4"
+                        style={document?.dir === 'rtl' ? { marginLeft: '1rem', marginRight: 0 } : { marginRight: '1rem', marginLeft: 0 }}
+                      >
+                        {employee.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .toUpperCase()}
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center">
                         <h3 className="text-lg font-medium text-gray-800">{employee.name}</h3>

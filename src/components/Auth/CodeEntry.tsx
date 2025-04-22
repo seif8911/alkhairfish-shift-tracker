@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock } from 'lucide-react';
+import logo from '../logo.jpeg'   // or .png
 import LanguageSwitch from '../LanguageSwitch';
 
 interface CodeEntryProps {
@@ -42,8 +42,8 @@ const CodeEntry: React.FC<CodeEntryProps> = ({ onSubmit, loading, error }) => {
         </div>
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-blue-600 px-6 py-8 text-center">
-            <Clock className="h-16 w-16 text-white mx-auto mb-2" />
-            <h1 className="text-3xl font-bold text-white">{t('codeEntry.title')}</h1>
+          <img src={logo} alt="Logo" className="h-55 w-80 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white">{t('codeEntry.title')}</h1>
             <p className="text-blue-100 mt-2">{t('codeEntry.subtitle')}</p>
             <div dir="ltr" className="text-white text-2xl mt-4 font-mono">{currentTime}</div>
           </div>

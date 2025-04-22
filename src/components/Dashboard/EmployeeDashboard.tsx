@@ -59,7 +59,31 @@ const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({ employee, onLogou
         <div className="mt-8 bg-white rounded-lg shadow-md p-6">
           <h2 className="text-lg font-medium text-gray-800 mb-4">{t('common.employeeInfo')}</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Employee photo + info grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Photo cell spans both rows */}
+            <div className="flex items-center justify-center md:row-span-2">
+              {employee.photo ? (
+                <img
+                  src={`/api/employees_pictures/${employee.photo}`}
+                  alt={employee.name}
+                  className="h-32 w-32 object-contain border"
+                  style={i18n.dir() === 'rtl' ? { marginLeft: '1rem' } : { marginRight: '1rem' }}
+                />
+              ) : (
+                <div
+                  className="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-2xl"
+                  style={i18n.dir() === 'rtl' ? { marginLeft: '1rem' } : { marginRight: '1rem' }}
+                >
+                  {employee.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()}
+                </div>
+              )}
+            </div>
+            {/* Existing info cells */}
             <div>
               <p className="text-sm text-gray-500">{t('common.employeeCode')}</p>
               <p className="font-medium">{employee.employeeCode}</p>

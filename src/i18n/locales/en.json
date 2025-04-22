@@ -63,7 +63,7 @@
     }
   },
   "codeEntry": {
-    "title": "Time Tracker",
+    "title": "Attendance",
     "subtitle": "Employee Check-In System",
     "enterCode": "Enter Employee Code",
     "verifying": "Verifying...",

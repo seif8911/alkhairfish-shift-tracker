@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Send } from 'lucide-react';
-import { generateReportDataApi, sendReportEmailApi, fetchEmployees } from '../../utils/api';
+import { generateReportDataApi, sendReportEmailApi } from '../../utils/api';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -8,7 +8,10 @@ const Reports: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
-  const [reportType, setReportType] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [endDate, setEndDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [reportType, setReportType] = useState<'daily' | 'weekly' | 'monthly' | 'custom'>('daily');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
 
@@ -24,7 +27,7 @@ const Reports: React.FC = () => {
         try {
           const astNow = new Date(Date.now() + astOffsetMs);
           const dateStr = astNow.toISOString().split('T')[0];
-          await sendReportEmailApi(dateStr);
+          await sendReportEmailApi(dateStr, 'daily');
           console.log(`Scheduled report sent to alkhairfish.shift.tracker@gmail.com for ${dateStr}`);
         } catch (err) {
           console.error('Scheduled report error:', err);
@@ -38,49 +41,60 @@ const Reports: React.FC = () => {
   const generateReport = async () => {
     setIsGenerating(true);
     setIsEmailSent(false);
-    
     try {
-      const reportData = await generateReportDataApi(selectedDate);
-      const employeesList = await fetchEmployees();
-      
+      const reportData = await generateReportDataApi(
+        selectedDate, 
+        reportType, 
+        reportType === 'custom' ? endDate : undefined
+      );
       // Generate Excel workbook
       const workbook = new ExcelJS.Workbook();
       const sheet = workbook.addWorksheet('Time Report');
       sheet.columns = [
         { header: 'Employee Code', key: 'employeeCode', width: 15 },
         { header: 'Name', key: 'name', width: 20 },
-        { header: 'Date', key: 'date', width: 15 },
+        { header: 'Date', key: 'date', width: 15, style: { numFmt: 'yyyy-mm-dd' } },
         { header: 'Day', key: 'day', width: 15 },
         { header: 'Clock In', key: 'clockIn', width: 12 },
         { header: 'Clock Out', key: 'clockOut', width: 12 },
         { header: 'Total Hours', key: 'totalHours', width: 12 },
       ];
       // Style header row
-      sheet.getRow(1).eachCell((cell: ExcelJS.Cell) => {
+      sheet.getRow(1).eachCell((cell: any) => {
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
         cell.alignment = { horizontal: 'center' };
       });
-      // Add data rows
-      reportData.forEach(r => {
-        const day = new Date(r.date).toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Riyadh' });
-        const clockInStr = r.clockIn
-          ? new Date(r.clockIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Riyadh' })
-          : '';
-        const clockOutStr = r.clockOut
-          ? new Date(r.clockOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Riyadh' })
-          : '';
-        const h = Math.floor(r.duration / 60);
-        const m = r.duration % 60;
-        const totalHoursStr = `${h}h ${m.toString().padStart(2, '0')}m`;
-        const emp = employeesList.find(e => e.id === r.employeeId);
-        const empCode = emp ? emp.employeeCode : '';
-        sheet.addRow({ employeeCode: empCode, name: r.name, date: r.date, day, clockIn: clockInStr, clockOut: clockOutStr, totalHours: totalHoursStr });
-      });
+      if (!reportData.length) {
+        sheet.addRow({ employeeCode: '', name: 'No activity', date: null, day: '', clockIn: '', clockOut: '', totalHours: '' });
+      } else {
+        reportData.forEach(r => {
+          // For Excel, we need to add 1 day to compensate for timezone issues
+          // This ensures the date shown in Excel matches the actual date from the database
+          const dateParts = r.date.split('-');
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]) - 1; // JS months are 0-indexed
+          const day = parseInt(dateParts[2]);
+          
+          // Create date object with time set to noon to avoid timezone issues
+          const dateObj = new Date(Date.UTC(year, month, day, 12, 0, 0));
+          
+          // Get day of week
+          const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Riyadh' });
+          
+          const clockInStr = r.clockIn ? new Date(r.clockIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Riyadh' }) : '';
+          const clockOutStr = r.clockOut ? new Date(r.clockOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Riyadh' }) : '';
+          const h = Math.floor(r.duration / 60);
+          const m = r.duration % 60;
+          const totalHoursStr = r.duration != null ? `${h}h ${m.toString().padStart(2, '0')}m` : '';
+          
+          sheet.addRow({ employeeCode: r.employeeCode, name: r.name, date: dateObj, day: dayOfWeek, clockIn: clockInStr, clockOut: clockOutStr, totalHours: totalHoursStr });
+        });
+      }
       // Shade alternate rows
-      sheet.eachRow((row: ExcelJS.Row, idx: number) => {
+      sheet.eachRow((row: any, idx: number) => {
         if (idx > 1 && idx % 2 === 0) {
-          row.eachCell((cell: ExcelJS.Cell) => {
+          row.eachCell((cell: any) => {
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
           });
         }
@@ -88,7 +102,14 @@ const Reports: React.FC = () => {
       // Export .xlsx
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, `time-report-${selectedDate}.xlsx`);
+      // Create appropriate filename based on report type
+      let filename;
+      if (reportType === 'custom') {
+        filename = `time-report-${selectedDate}-to-${endDate}.xlsx`;
+      } else {
+        filename = `time-report-${selectedDate}-${reportType}.xlsx`;
+      }
+      saveAs(blob, filename);
     } catch (error) {
       console.error('Error generating report:', error);
       alert('Failed to generate report');
@@ -99,9 +120,12 @@ const Reports: React.FC = () => {
 
   const sendReportByEmail = async () => {
     setIsEmailSent(false);
-    
     try {
-      await sendReportEmailApi(selectedDate);
+      await sendReportEmailApi(
+        selectedDate, 
+        reportType, 
+        reportType === 'custom' ? endDate : undefined
+      );
       setIsEmailSent(true);
       alert('Report has been sent to alkhairfish.shift.tracker@gmail.com');
     } catch (error) {
@@ -109,6 +133,7 @@ const Reports: React.FC = () => {
       alert('Failed to send report');
     }
   };
+
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -139,7 +164,7 @@ const Reports: React.FC = () => {
               Daily
             </button>
             
-            <button
+            {/* <button
               onClick={() => setReportType('weekly')}
               className={`px-4 py-2 rounded-md font-medium ${
                 reportType === 'weekly'
@@ -148,7 +173,7 @@ const Reports: React.FC = () => {
               }`}
             >
               Weekly
-            </button>
+            </button> */}
             
             <button
               onClick={() => setReportType('monthly')}
@@ -160,6 +185,17 @@ const Reports: React.FC = () => {
             >
               Monthly
             </button>
+
+            <button
+              onClick={() => setReportType('custom')}
+              className={`px-4 py-2 rounded-md font-medium ${
+                reportType === 'custom'
+                  ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Custom Range
+            </button>
           </div>
         </div>
         
@@ -167,7 +203,8 @@ const Reports: React.FC = () => {
           <label htmlFor="report-date" className="block text-sm font-medium text-gray-700 mb-2">
             {reportType === 'daily' ? 'Select Date' :
              reportType === 'weekly' ? 'Select Week Starting' :
-             'Select Month'}
+             reportType === 'monthly' ? 'Select Month' :
+             'Select Start Date'}
           </label>
           <input
             id="report-date"
@@ -177,6 +214,21 @@ const Reports: React.FC = () => {
             className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
+
+        {reportType === 'custom' && (
+          <div className="mb-6">
+            <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-2">
+              Select End Date
+            </label>
+            <input
+              id="end-date"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+        )}
         
         <div className="flex flex-col md:flex-row gap-4">
           <button
